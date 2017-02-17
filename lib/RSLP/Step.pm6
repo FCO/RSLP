@@ -4,11 +4,12 @@ use RSLP::Rule;
 has Str         $.name		is required;
 has Int         $.min-size	is default(0);
 has Bool        $.full-word-compare		= False;
-has Junction    $.suffix;
+has Junction    $.suffix                = all();
 has RSLP::Rule  @.rules		handles "push";
 
 method new(::?CLASS:U: *%params) {
-	%params<suffix> = any %params<suffixes>;
+	%params<suffix> = any %params<suffixes>
+        if %params<suffixes>:exists;
 	%params<min-size> = %params<rules>.map({.min-size}).min
 		if %params<rules>:exists and not %params<min-size>:exists;
 	self.bless: |%params
@@ -17,7 +18,9 @@ method add-rule(::?CLASS::D: *%params) {
 	$.push(RSLP::Rule.new: |%params);
 	$!min-size min= %params<min-size>
 }
-multi method CALL-ME(Str:D $word) {$word ~ "" but False}
+multi method CALL-ME(Str:D $word) {
+    $word ~ "" but False
+}
 multi method CALL-ME(
 	Str:D $word where {
 			.chars >= $!min-size
