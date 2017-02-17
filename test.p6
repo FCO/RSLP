@@ -1,7 +1,5 @@
 use RSLP;
 my RSLP $rslp .= new;
-say $rslp("mães");
-say $rslp("pães");
-say $rslp("mais");
-
-say $rslp("portões");
+say do for lines.map: |*.lc.comb(/\w+/) -> $word {
+    $rslp($word)
+}.Bag
