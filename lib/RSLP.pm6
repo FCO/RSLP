@@ -1,6 +1,7 @@
 unit class RSLP is Routine;
 use RSLP::Step;
 
+my %cache;
 method new {::?CLASS.bless}
 
 my &plural = RSLP::Step.new: :name<plural> :suffixes["s"];
@@ -87,6 +88,7 @@ my %steps =
 ;
 
 method CALL-ME($word) {
+    .return with %cache{$word};
 	my $stem	= $word;
 	my $step	= %steps<__INITIAL__>;
 	while $step.defined {
@@ -95,5 +97,5 @@ method CALL-ME($word) {
         $step   = $step{?$stem} if $step ~~ Hash;
         $stem ~= ""
 	}
-	$stem
+	%cache{$word} = $stem
 }
