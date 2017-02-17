@@ -24,21 +24,22 @@ $step1.add-rule: :suffix<s>     :2min-size :add-suffix("") :exceptions<
 	mas     menos
 >;
 
-has Routine @!steps =
-	$step1,
-	#$step2,
-	#$step3,
-	#$step4,
-	#$step5,
-	#$step6,
-	#$step7,
-	sub ($_) { .samemark("a") }
+sub remove-marks($_) { .samemark("a") }
+
+my %steps =
+	__INITIAL__	=> $step1,
+	plural		=> {
+		True	=> &remove-marks,
+		False	=> &remove-marks,
+	},
 ;
 
 method CALL-ME($word) {
-	my $stem = $word;
-	for @!steps -> &step {
-		$stem = step($stem)
+	my $stem	= $word;
+	my $step	= %steps<__INITIAL__>;
+	while $step.defined {
+		$stem	= $step($stem);
+		$step	= %steps{$step.?name}{?$stem}
 	}
 	$stem
 }
